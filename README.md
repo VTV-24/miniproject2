@@ -1,6 +1,6 @@
 # 🌫️ AIR GUARD – Dự báo PM2.5 và Phân loại AQI bằng Machine Learning
 
-Mini Project môn Khai phá dữ liệu – 2026  
+Mini Project - AIR GUARD – DỰ BÁO PM2.5 VÀ CẢNH BÁO AQI THEO TRẠM
 Nhóm: 11
 ## 📌 Giới thiệu đề tài
 
@@ -14,6 +14,7 @@ Trong mini project này, nhóm xây dựng hệ thống **AIR GUARD** nhằm:
 - Áp dụng các kỹ thuật học máy, bao gồm cả **semi-supervised learning** để tận dụng dữ liệu chưa gán nhãn
 
 Mục tiêu không chỉ là xây dựng mô hình dự đoán, mà còn đánh giá hiệu quả của các phương pháp học khác nhau trong bối cảnh dữ liệu môi trường thực tế.
+
 ## ⚙️ Pipeline xử lý dữ liệu và mô hình
 
 Toàn bộ hệ thống được xây dựng theo pipeline tự động gồm các bước:
@@ -30,15 +31,15 @@ Pipeline được tự động hóa bằng `papermill`, cho phép chạy toàn b
 
 ```bash
 python run_papermill.py
+```
 
 ---
 
 ## 🔷 3. Phần việc cá nhân – Semi-supervised Learning & Baseline
 
-```md
 ## 🧠 Phần việc thực hiện: Baseline & Semi-supervised Learning
 
-Trong dự án này, tôi phụ trách các nội dung chính sau:
+Trong dự án này, em phụ trách các nội dung chính sau:
 
 ### ✅ 1. Xây dựng Baseline Supervised Model
 
@@ -101,3 +102,4 @@ Kết quả của các mô hình được so sánh dựa trên:
 - F1-macro
 
 Qua đó đánh giá mức độ cải thiện của semi-supervised learning so với supervised learning trong bài toán phân loại AQI.
+
