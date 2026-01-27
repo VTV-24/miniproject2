@@ -164,4 +164,28 @@ pm.execute_notebook(
     kernel_name=KERNEL,
 )
 
-print("Đã chạy xong pipeline (semi-supervised + supervised + regression + ARIMA + report)")
+# 10) NEW: Semi-supervised Experiments (Train & Eval)
+# Chạy thực nghiệm: Baseline, Self-Training, Co-Training, Ensemble
+pm.execute_notebook(
+    "notebooks/semi_all_experiments.ipynb",
+    "notebooks/runs/semi_all_experiments_run.ipynb",
+    parameters=dict(
+    ),
+    language="python",
+    kernel_name=KERNEL,
+    cwd="notebooks/",
+)
+
+# 11) NEW: Final Report (Viz & Text)
+# Hiển thị báo cáo và biểu đồ từ kết quả thực nghiệm
+pm.execute_notebook(
+    "notebooks/semi_final_report.ipynb",
+    "notebooks/runs/semi_final_report_run.ipynb",
+    parameters=dict(
+    ),
+    language="python",
+    kernel_name=KERNEL,
+    cwd="notebooks/",
+)
+
+print("Đã chạy xong toàn bộ pipeline (bao gồm cả Comprehensive Semi-supervised Pipeline)")
