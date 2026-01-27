@@ -1,163 +1,103 @@
-# Air Quality Timeseries — PM2.5 Forecasting & AQI Alerts (Supervised + Semi‑Supervised)
+# 🌫️ AIR GUARD – Dự báo PM2.5 và Phân loại AQI bằng Machine Learning
 
-Mini-project “end‑to‑end pipeline” trên bộ **Beijing Multi‑Site Air Quality (12 stations)** nhằm xây dựng:
-1) **Dự báo PM2.5** (regression + ARIMA)  
-2) **Phân lớp AQI (AQI level/class)** để **cảnh báo theo trạm**  
-3) **Bán giám sát (Semi‑Supervised Learning)** để cải thiện khi **thiếu nhãn AQI / nhãn không chuẩn** (Self‑Training → Co‑Training)
+Mini Project môn Khai phá dữ liệu – 2026  
+Nhóm: 11
+## 📌 Giới thiệu đề tài
 
-Thiết kế theo triết lý:
-- **OOP**: thư viện trong `src/` (train/eval/feature engineering).
-- **Notebook‑per‑task**: mỗi notebook làm 1 nhiệm vụ rõ ràng.
-- **Papermill**: chạy pipeline tự động bằng `run_papermill.py`.
+Ô nhiễm không khí, đặc biệt là bụi mịn PM2.5, là một trong những vấn đề môi trường nghiêm trọng tại các đô thị lớn.
+Chỉ số AQI (Air Quality Index) được sử dụng để đánh giá mức độ ảnh hưởng của chất lượng không khí đến sức khỏe con người.
 
----
+Trong mini project này, nhóm xây dựng hệ thống **AIR GUARD** nhằm:
 
-## 1) Dataset
+- Dự báo nồng độ PM2.5 theo thời gian
+- Phân loại mức độ AQI theo từng trạm quan trắc
+- Áp dụng các kỹ thuật học máy, bao gồm cả **semi-supervised learning** để tận dụng dữ liệu chưa gán nhãn
 
-- Nguồn: **Beijing Multi‑Site Air Quality** (12 stations, dữ liệu theo giờ).
-- Repo hỗ trợ 2 cách nạp dữ liệu trong notebook `preprocessing_and_eda.ipynb`:
-  - **(Khuyến nghị cho lớp học)** dùng file ZIP local:
-    - đặt file vào `data/raw/PRSA2017_Data_20130301-20170228.zip`
-    - set `USE_UCIMLREPO=False`
-  - dùng `ucimlrepo` (nếu notebook có hỗ trợ trong code): set `USE_UCIMLREPO=True`
+Mục tiêu không chỉ là xây dựng mô hình dự đoán, mà còn đánh giá hiệu quả của các phương pháp học khác nhau trong bối cảnh dữ liệu môi trường thực tế.
+## ⚙️ Pipeline xử lý dữ liệu và mô hình
 
-> Lưu ý “leakage”: **không dùng trực tiếp `PM2.5` / `pm25_24h` trong feature đầu vào cho mô hình phân lớp AQI**.
+Toàn bộ hệ thống được xây dựng theo pipeline tự động gồm các bước:
 
----
+1. Tiền xử lý và khám phá dữ liệu (Preprocessing & EDA)
+2. Chuẩn bị đặc trưng (Feature Engineering)
+3. Xây dựng mô hình supervised (Baseline)
+4. Áp dụng semi-supervised learning:
+   - Self-training
+   - Co-training
+5. So sánh và đánh giá kết quả các mô hình
 
-## 2) Cấu trúc thư mục
-
-```
-air_quality_timeseries_with_semi/
-├─ data/
-│  ├─ raw/                # ZIP dữ liệu gốc
-│  └─ processed/          # parquet + metrics + predictions + alerts
-├─ notebooks/
-│  ├─ preprocessing_and_eda.ipynb
-│  ├─ feature_preparation.ipynb
-│  ├─ classification_modelling.ipynb
-│  ├─ regression_modelling.ipynb
-│  ├─ arima_forecasting.ipynb
-│  ├─ semi_dataset_preparation.ipynb          
-│  ├─ semi_self_training.ipynb                
-│  ├─ semi_co_training.ipynb                  
-│  ├─ semi_supervised_report.ipynb            
-│  └─ runs/                                   # output notebooks khi chạy papermill
-├─ src/
-│  ├─ classification_library.py
-│  ├─ regression_library.py
-│  ├─ timeseries_library.py
-│  └─ semi_supervised_library.py              
-├─ run_papermill.py
-├─ requirements.txt
-└─ README.md
-```
-
----
-
-## 3) Cài đặt môi trường
-
-### 3.1 Tạo môi trường (Conda) và kernel cho Papermill
-Repo mặc định chạy papermill với kernel tên **`beijing_env`** (xem `run_papermill.py`).
-
-```bash
-conda create -n beijing_env python=3.11 -y
-conda activate beijing_env
-pip install -r requirements.txt
-
-# đăng ký kernel để Papermill gọi được
-python -m ipykernel install --user --name beijing_env --display-name "beijing_env"
-```
-
-### 3.2 Kiểm tra nhanh
-```bash
-python -c "import pandas, sklearn, papermill; print('OK')"
-```
-
----
-
-## 4) Chạy pipeline (Papermill)
-
-Chạy toàn bộ pipeline:
+Pipeline được tự động hóa bằng `papermill`, cho phép chạy toàn bộ notebook chỉ bằng một lệnh:
 
 ```bash
 python run_papermill.py
-```
-
-Kết quả:
-- Notebook chạy xong sẽ nằm ở `notebooks/runs/*_run.ipynb`
-- Artefacts nằm ở `data/processed/` (metrics, predictions, alerts, parquet)
 
 ---
 
-## 5) Mô tả pipeline notebooks (Notebook‑per‑task)
+## 🔷 3. Phần việc cá nhân – Semi-supervised Learning & Baseline
 
-| Thứ tự | Notebook | Mục tiêu | Output chính |
-|---:|---|---|---|
-| 01 | `preprocessing_and_eda.ipynb` | đọc dữ liệu, làm sạch, tạo time features cơ bản | `data/processed/cleaned.parquet` |
-| 02 | `semi_dataset_preparation.ipynb` | **giữ dữ liệu chưa nhãn + giả lập thiếu nhãn (train‑only)** | `data/processed/dataset_for_semi.parquet` |
-| 03 | `feature_preparation.ipynb` | tạo dataset supervised cho phân lớp | `data/processed/dataset_for_clf.parquet` |
-| 04 | `semi_self_training.ipynb` | **Self‑Training** cho AQI classification | `metrics_self_training.json`, `alerts_self_training_sample.csv` |
-| 05 | `semi_co_training.ipynb` | **Co‑Training (2 views)** cho AQI classification | `metrics_co_training.json`, `alerts_co_training_sample.csv` |
-| 06 | `classification_modelling.ipynb` | baseline supervised classification | `metrics.json`, `predictions_sample.csv` |
-| 07 | `regression_modelling.ipynb` | dự báo PM2.5 (regression) | `regression_metrics.json`, `regressor.joblib` |
-| 08 | `arima_forecasting.ipynb` | ARIMA forecasting cho 1 trạm | `arima_pm25_*` |
-| 09 | `semi_supervised_report.ipynb` | **Storytelling report**: so sánh baseline vs semi + alert theo trạm | notebook report chạy trong `notebooks/runs/` |
+```md
+## 🧠 Phần việc thực hiện: Baseline & Semi-supervised Learning
 
----
+Trong dự án này, tôi phụ trách các nội dung chính sau:
 
-## 6) Thư viện OOP (src/)
+### ✅ 1. Xây dựng Baseline Supervised Model
 
-### 6.1 `src/classification_library.py`
-- `time_split(df, cutoff)`: chia train/test theo thời gian
-- `train_classifier(train_df, test_df, target_col='aqi_class')` → trả về `{model, metrics, pred_df}`
-- Guard leakage: loại cột như `PM2.5`, `pm25_24h`, `datetime` khỏi features.
+- Chia dữ liệu theo thời gian (time-based split)
+- Huấn luyện mô hình phân loại AQI
+- Đánh giá bằng các chỉ số:
+  - Accuracy
+  - F1-macro
+  - Confusion Matrix
 
-### 6.2 `src/semi_supervised_library.py` 
-- `mask_labels_time_aware(...)`: giả lập thiếu nhãn **chỉ trong TRAIN**
-- `SelfTrainingAQIClassifier`: vòng lặp pseudo‑label theo ngưỡng `tau`
-- `CoTrainingAQIClassifier`: co‑training 2 views + late‑fusion
-- `add_alert_columns(...)`: tạo `is_alert` theo ngưỡng mức AQI (vd từ `"Unhealthy"`)
+Mục tiêu của baseline là tạo mốc so sánh cho các phương pháp semi-supervised.
 
 ---
 
-## 7) MINI PROJECT: Semi‑Supervised AQI + Alerts theo trạm
+### ✅ 2. Chuẩn bị dữ liệu cho Semi-supervised Learning
 
-### 7.1 Mục tiêu
-Xây dựng hệ thống:
-- dự đoán `aqi_class` cho từng timestamp/trạm
-- sinh **cảnh báo** theo trạm (`is_alert`)
-- khi **thiếu nhãn AQI** (hoặc nhãn không chuẩn), dùng **Self‑Training** và **Co‑Training** để cải thiện chất lượng.
+Dữ liệu được chia thành:
 
-### 7.2 Thiết kế thí nghiệm (bắt buộc)
-1) **Baseline supervised**  
-   - Chạy `classification_modelling.ipynb`  
-   - Lấy `accuracy`, `f1_macro` từ `data/processed/metrics.json`
+- Tập có nhãn (labeled)
+- Tập chưa có nhãn (unlabeled)
+- Tập validation
+- Tập test
 
-2) **Giả lập thiếu nhãn (train‑only)**  
-   - Chạy `semi_dataset_preparation.ipynb` với:
-     - `LABEL_MISSING_FRACTION ∈ {0.7, 0.9, 0.95, 0.98}`
-
-3) **Self‑Training**  
-   - Chạy `semi_self_training.ipynb` với:
-     - `TAU ∈ {0.8, 0.9, 0.95}`
-   - Phân tích: vòng lặp nào bắt đầu “bão hoà”, số pseudo‑labels tăng/giảm ra sao.
-
-4) **Co‑Training**  
-   - Chạy `semi_co_training.ipynb` với `TAU` giống Self‑Training
-   - Bắt buộc thử 2 chế độ:
-     - **Auto split views** (để `VIEW1_COLS=None`, `VIEW2_COLS=None`)
-     - **Manual views**: tự thiết kế 2 views và giải thích vì sao hợp lý.
-
-
-## 8) Chạy nhanh từng notebook (không dùng Papermill)
-Bạn có thể mở Jupyter và chạy tuần tự từng notebook theo thứ tự ở mục (5).
+Các tập dữ liệu được lưu dưới dạng `.pkl` để tái sử dụng cho các thuật toán semi-supervised.
 
 ---
 
-## 9) Author
-Project được thực hiện bởi:
-Trang Le
+### ✅ 3. Self-training
 
-## 10) License
-MIT — sử dụng tự do cho nghiên cứu, học thuật và ứng dụng nội bộ.
+Quy trình self-training gồm:
+
+1. Huấn luyện model trên dữ liệu có nhãn
+2. Dự đoán nhãn cho dữ liệu chưa gán nhãn
+3. Chọn các mẫu có độ tin cậy cao
+4. Bổ sung vào tập huấn luyện
+5. Lặp lại nhiều vòng
+
+Mục tiêu là mở rộng tập huấn luyện mà không cần thêm dữ liệu gán nhãn thủ công.
+
+---
+
+### ✅ 4. Co-training
+
+Trong co-training:
+
+- Tách đặc trưng thành hai view độc lập
+- Huấn luyện hai mô hình song song
+- Mỗi mô hình gán nhãn cho dữ liệu mới của mô hình còn lại
+- Các mẫu tin cậy cao được thêm dần vào tập train
+
+Phương pháp này giúp giảm thiên lệch và cải thiện độ ổn định so với self-training.
+
+---
+
+### ✅ 5. Đánh giá và so sánh
+
+Kết quả của các mô hình được so sánh dựa trên:
+
+- Accuracy
+- F1-macro
+
+Qua đó đánh giá mức độ cải thiện của semi-supervised learning so với supervised learning trong bài toán phân loại AQI.
