@@ -65,4 +65,3 @@ pm.execute_notebook(
     kernel_name=KERNEL,
 )
 
-print("Đã chạy xong toàn bộ pipeline: baseline + self-training + co-training.")
