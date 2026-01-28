@@ -1,0 +1,37 @@
+{
+  "baseline": {
+    "accuracy": 0.6022434167116549,
+    "f1_macro": 0.6532894736842105,
+    "n_train": 396264,
+    "n_test": 16671
+  },
+  "self_training_sweep": {
+    "tau_0.7": {
+      "accuracy": 0.5781296862815668,
+      "f1_macro": 0.5050845715636213,
+      "n_test": 16671,
+      "total_pseudo_labels": 373509
+    },
+    "tau_0.8": {
+      "accuracy": 0.5940855377601824,
+      "f1_macro": 0.5166876119048376,
+      "n_test": 16671,
+      "total_pseudo_labels": 364388
+    },
+    "tau_0.9": {
+      "accuracy": 0.589046847819567,
+      "f1_macro": 0.5343258092284096,
+      "n_test": 16671,
+      "total_pseudo_labels": 350019
+    },
+    "tau_0.95": {
+      "accuracy": 0.5930658028912483,
+      "f1_macro": 0.5329857186561676,
+      "n_test": 16671,
+      "total_pseudo_labels": 314834
+    }
+  },
+  "best_tau": 0.8,
+  "best_tau_accuracy": 0.5940855377601824,
+  "best_tau_f1_macro": 0.5166876119048376
+}
